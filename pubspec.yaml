@@ -1,4 +1,4 @@
-name: arh_app
+name: ArchConnect
 description: "A new Flutter project."
 publish_to: 'none'
 
@@ -10,18 +10,28 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.5
   flutter_lints: ^5.0.0
+
+flutter_icons:  # ✅ Moved to the root level
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
+
+flutter_native_splash:
+  color: "#DED2C8"
+  image: assets/icons/app_icon.png
+  android: true
+  ios: true
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
     - assets/icons/
-
