@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'login_screen.dart'; // ✅ Correct import for the login page
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,7 +26,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // 🔙 Back Arrow in Transparent Box with White Border + Title below
+                // 🔙 Back Arrow and Title
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -56,23 +57,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 const SizedBox(height: 42),
 
-                // 🧑 Username
+                // Username
                 _buildInput("Username"),
                 const SizedBox(height: 16),
 
-                // 📧 Email
+                // Email
                 _buildInput("Email", keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
 
-                // 🔒 Password
+                // Password
                 _buildPasswordField("Password", true),
                 const SizedBox(height: 16),
 
-                // 🔒 Confirm Password
+                // Confirm Password
                 _buildPasswordField("Confirm Password", false),
                 const SizedBox(height: 16),
 
-                // ✅ Checkbox
+                // Terms Checkbox
                 CheckboxListTile(
                   activeColor: Colors.white,
                   checkColor: Colors.black,
@@ -91,7 +92,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // 🔘 Sign Up Button
+                // Sign Up Button ➜ handle validation
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFD9C9BB),
@@ -104,6 +105,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     if (_formKey.currentState!.validate() && _acceptTerms) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("Signing up...")),
+                      );
+                      // You can also navigate after success:
+                      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+                    } else if (!_acceptTerms) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please accept the terms to continue.")),
                       );
                     }
                   },
@@ -118,17 +125,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                 const SizedBox(height: 16),
 
+                // Log in Link ➜ now navigates to LoginScreen
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Navigate to Login screen if needed
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      );
                     },
-                    child: const Text(
-                      "Already have an account? Log in",
-                      style: TextStyle(color: Colors.white),
+                    child: const Text.rich(
+                      TextSpan(
+                        text: "Already have an account? ",
+                        style: TextStyle(color: Colors.white),
+                        children: [
+                          TextSpan(
+                            text: "Log in",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+
                 const SizedBox(height: 32),
               ],
             ),
@@ -138,7 +161,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  // 🧩 Input Field Builder
   Widget _buildInput(String label,
       {TextInputType keyboardType = TextInputType.text}) {
     return TextFormField(
@@ -158,7 +180,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  // 🧩 Password Field Builder
   Widget _buildPasswordField(String label, bool isPassword) {
     return TextFormField(
       obscureText: isPassword ? _obscurePassword : _obscureConfirm,

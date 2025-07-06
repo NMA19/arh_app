@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.arh_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "28.1.13356709"
     buildToolsVersion = "36.0.0"
 
 

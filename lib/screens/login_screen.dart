@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
-import 'loginwithphone_screen.dart'; // 👈 Add this import
+import 'loginwithphone_screen.dart';
+import 'reset_password_screen.dart'; // ✅ Import is correct
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -101,8 +102,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   TextButton(
-                    onPressed: () {},
-                    child: const Text("Forgot password?", style: TextStyle(color: Colors.white)),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ResetPasswordScreen()),
+                      );
+                    },
+                    child: const Text(
+                      "Forgot password?",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -121,7 +133,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const LoginWithPhoneScreen()),
-
                   );
                 },
                 child: const Text(
@@ -168,11 +179,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       MaterialPageRoute(builder: (_) => const SignUpScreen()),
                     );
                   },
-                  child: const Text(
-                    "Don’t have an account? Sign up",
-                    style: TextStyle(
-                      color: Colors.white,
-
+                  child: const Text.rich(
+                    TextSpan(
+                      text: "Don’t have an account? ",
+                      style: TextStyle(color: Colors.white),
+                      children: [
+                        TextSpan(
+                          text: "Sign up",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
