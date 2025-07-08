@@ -153,13 +153,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 100),
             ],
           ),
         ),
       ),
 
-      // Curved Bottom Navigation Bar
+      // Bottom Navigation Bar
       bottomNavigationBar: CurvedBottomNavigationBar(
         selectedIndex: _selectedIndex,
         onTap: (index) {
@@ -189,10 +189,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ],
         backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF7993AE),
-        unselectedItemColor: Colors.black54,
-        fabIcon: Image.asset('assets/icons/Search.png', width: 26, height: 26),
-        fabBackgroundColor: const Color(0xFFDED2C8),
-        onFabPressed: () {},
+        unselectedItemColor: Colors.grey[600]!,
+        fabIcon: Container(
+          padding: const EdgeInsets.all(2),
+          child: Image.asset(
+            'assets/icons/Search.png',
+            width: 24,
+            height: 24,
+            color: Colors.white,
+          ),
+        ),
+        fabBackgroundColor: const Color(0xFF7993AE),
+        onFabPressed: () {
+          // Add your Search logic here
+          print('Search pressed');
+        },
       ),
     );
   }
@@ -223,7 +234,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 }
 
-// Custom Curved Bottom Navigation Bar
+// ----------------------------
+// Enhanced Curved Bottom Navigation Bar
+// ----------------------------
 class CurvedBottomNavigationBar extends StatefulWidget {
   final int selectedIndex;
   final Function(int) onTap;
@@ -253,113 +266,178 @@ class CurvedBottomNavigationBar extends StatefulWidget {
 }
 
 class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;
+    with TickerProviderStateMixin {
+  AnimationController? _fabAnimationController;
+  AnimationController? _rippleAnimationController;
+  Animation<double>? _fabScaleAnimation;
+  Animation<double>? _rippleAnimation;
 
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
+
+    // Initialize animation controllers first
+    _fabAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 150),
       vsync: this,
     );
-    _scaleAnimation = Tween<double>(
-      begin: 0.95,
+    _rippleAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    // Initialize animations after controllers
+    _fabScaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.9,
+    ).animate(CurvedAnimation(
+      parent: _fabAnimationController!,
+      curve: Curves.easeInOut,
+    ));
+
+    _rippleAnimation = Tween<double>(
+      begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
+      parent: _rippleAnimationController!,
+      curve: Curves.easeOut,
     ));
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
+    _fabAnimationController?.dispose();
+    _rippleAnimationController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        Container(
-          height: 80,
-          decoration: BoxDecoration(
-            color: widget.backgroundColor,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, -5),
-              ),
-            ],
+    return Container(
+      height: 90, // Increased height to accommodate higher nav items
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+            spreadRadius: 0,
           ),
-          child: ClipPath(
-            clipper: CurvedBottomClipper(),
-            child: Container(
-              color: widget.backgroundColor,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  for (int i = 0; i < widget.items.length; i++)
-                    if (i == widget.items.length ~/ 2)
-                      const SizedBox(width: 60) // Space for FAB
-                    else
-                      _buildNavItem(i),
-                ],
-              ),
-            ),
-          ),
-        ),
-
-        // Floating Action Button
-        Positioned(
-          top: -25,
-          child: GestureDetector(
-            onTapDown: (_) {
-              _animationController.reverse();
-            },
-            onTapUp: (_) {
-              _animationController.forward();
-              widget.onFabPressed();
-            },
-            onTapCancel: () {
-              _animationController.forward();
-            },
-            child: AnimatedBuilder(
-              animation: _scaleAnimation,
-              builder: (context, child) {
-                return Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: widget.fabBackgroundColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 6),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Center(child: widget.fabIcon),
+        ],
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Bottom bar background with enhanced curve
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: ClipPath(
+              clipper: CurvedBottomClipper(),
+              child: Container(
+                height: 85,
+                decoration: BoxDecoration(
+                  color: widget.backgroundColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(25),
+                    topRight: Radius.circular(25),
                   ),
-                );
-              },
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 0, left: 8, right: 8), // Moved nav items to the very top
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: _buildNavItem(0)),
+                      Expanded(child: _buildNavItem(1)),
+                      const SizedBox(width: 80), // Increased space for even deeper FAB curve
+                      Expanded(child: _buildNavItem(2)),
+                      Expanded(child: _buildNavItem(3)),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+
+          // Enhanced Floating Action Button with deeper curve positioning
+          Positioned(
+            top: -30, // Positioned even higher to create more dramatic curve effect
+            left: (MediaQuery.of(context).size.width - 64) / 2,
+            child: GestureDetector(
+              onTapDown: (_) {
+                _fabAnimationController?.forward();
+              },
+              onTapUp: (_) {
+                _fabAnimationController?.reverse();
+                _rippleAnimationController?.forward().then((_) {
+                  _rippleAnimationController?.reset();
+                });
+                widget.onFabPressed();
+              },
+              onTapCancel: () {
+                _fabAnimationController?.reverse();
+              },
+              child: AnimatedBuilder(
+                animation: Listenable.merge([
+                  _fabScaleAnimation ?? const AlwaysStoppedAnimation(1.0),
+                  _rippleAnimation ?? const AlwaysStoppedAnimation(0.0)
+                ]),
+                builder: (context, child) {
+                  final scaleValue = _fabScaleAnimation?.value ?? 1.0;
+                  final rippleValue = _rippleAnimation?.value ?? 0.0;
+
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Enhanced ripple effect
+                      if (rippleValue > 0)
+                        Container(
+                          width: 64 + (rippleValue * 30),
+                          height: 64 + (rippleValue * 30),
+                          decoration: BoxDecoration(
+                            color: widget.fabBackgroundColor.withOpacity(0.3 * (1 - rippleValue)),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      // Enhanced FAB with larger size
+                      Transform.scale(
+                        scale: scaleValue,
+                        child: Container(
+                          width: 64, // Increased size
+                          height: 64,
+                          decoration: BoxDecoration(
+                            color: widget.fabBackgroundColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white, width: 4),
+                            boxShadow: [
+                              BoxShadow(
+                                color: widget.fabBackgroundColor.withOpacity(0.4),
+                                blurRadius: 12,
+                                offset: const Offset(0, 6),
+                                spreadRadius: 0,
+                              ),
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 3),
+                                spreadRadius: 0,
+                              ),
+                            ],
+                          ),
+                          child: Center(child: widget.fabIcon),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -369,39 +447,65 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
 
     return GestureDetector(
       onTap: () => widget.onTap(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        padding: const EdgeInsets.symmetric(vertical: 8),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? widget.selectedItemColor.withOpacity(0.1)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                item.icon,
-                color: isSelected ? widget.selectedItemColor : widget.unselectedItemColor,
-                size: isSelected ? 28 : 24,
-              ),
+            // Icon with selection indicator
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                // Selection background
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut,
+                  width: isSelected ? 28 : 0,
+                  height: isSelected ? 28 : 0,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? widget.selectedItemColor.withOpacity(0.15)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                // Icon
+                Icon(
+                  item.icon,
+                  color: isSelected ? widget.selectedItemColor : widget.unselectedItemColor,
+                  size: isSelected ? 22 : 20,
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 2),
+            // Label
             AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 250),
               style: TextStyle(
                 color: isSelected ? widget.selectedItemColor : widget.unselectedItemColor,
-                fontSize: isSelected ? 12 : 10,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontSize: isSelected ? 10 : 9,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                height: 1.2,
               ),
-              child: Text(item.label),
+              child: Text(
+                item.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            // Selection indicator dot
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              margin: const EdgeInsets.only(top: 1),
+              width: isSelected ? 3 : 0,
+              height: isSelected ? 3 : 0,
+              decoration: BoxDecoration(
+                color: widget.selectedItemColor,
+                shape: BoxShape.circle,
+              ),
             ),
           ],
         ),
@@ -410,7 +514,7 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
   }
 }
 
-// Custom clipper for curved bottom navigation
+// Enhanced Clipper for deeper FAB curve
 class CurvedBottomClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -418,18 +522,24 @@ class CurvedBottomClipper extends CustomClipper<Path> {
     final w = size.width;
     final h = size.height;
 
-    path.moveTo(0, 20);
-    path.quadraticBezierTo(0, 0, 20, 0);
-    path.lineTo(w * 0.35, 0);
-    path.quadraticBezierTo(w * 0.4, 0, w * 0.4, 10);
-    path.arcToPoint(
-      Offset(w * 0.6, 10),
-      radius: const Radius.circular(35),
-      clockwise: false,
-    );
-    path.quadraticBezierTo(w * 0.6, 0, w * 0.65, 0);
-    path.lineTo(w - 20, 0);
-    path.quadraticBezierTo(w, 0, w, 20);
+    // Start from top-left corner with rounded corner
+    path.moveTo(0, 15);
+    path.quadraticBezierTo(0, 0, 15, 0);
+
+    // Left side approaching the curve
+    path.lineTo(w * 0.32, 0);
+    path.quadraticBezierTo(w * 0.38, 0, w * 0.40, 12);
+
+    // Enhanced curve for FAB - much deeper and more pronounced
+    path.quadraticBezierTo(w * 0.43, 45, w * 0.50, 60); // Much deeper curve
+    path.quadraticBezierTo(w * 0.57, 45, w * 0.60, 12);
+
+    // Right side leaving the curve
+    path.quadraticBezierTo(w * 0.62, 0, w * 0.68, 0);
+    path.lineTo(w - 15, 0);
+
+    // Top-right corner with rounded corner
+    path.quadraticBezierTo(w, 0, w, 15);
     path.lineTo(w, h);
     path.lineTo(0, h);
     path.close();
@@ -441,7 +551,7 @@ class CurvedBottomClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-// Data class for navigation items
+// Nav Item model
 class CurvedBottomNavigationBarItem {
   final IconData icon;
   final String label;
