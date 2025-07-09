@@ -37,3 +37,6 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/images/Topic1/
+    - assets/images/Topic2/
+    - assets/icons/app_icon.png
