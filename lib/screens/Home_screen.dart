@@ -50,12 +50,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 20),
 
-              // Project Box
+              // Project Box - Updated with thicker border
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: const Color(0xFFD9D9D9),
-                  border: Border.all(color: Color(0xFF7993AE), width: 0.5),
+                  border: Border.all(color: Color(0xFF7993AE), width: 3.0), // Increased from 0.5 to 3.0
                   borderRadius: BorderRadius.zero,
                 ),
                 child: Row(
@@ -101,12 +101,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(width: 12),
                     Expanded(
                       flex: 2,
-                      child: Image.asset('assets/images/Blueprint.png', fit: BoxFit.fitWidth, height: 100),
+                      child: Image.asset('assets/images/Blueprint.png', fit: BoxFit.cover, height: 100), // Changed to cover and back to 100
                     )
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
 
               // Store and Inspiration
               Row(
@@ -133,10 +133,29 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // LoadEas & SOS
               Row(
                 children: [
-                  _buildSquareBox('assets/images/Blueprint.png', 'LoadEas', ''),
+                  Expanded(
+                    child: Container(
+                      height: 92, // Set explicit height to match SOS box
+                      padding: const EdgeInsets.only(top: 36, bottom: 16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD9D9D9),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'LoadEas',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Container(
+                      height: 92, // Set explicit height to match LoadEas box
                       padding: const EdgeInsets.only(top: 36, bottom: 16),
                       decoration: BoxDecoration(
                         color: const Color(0xFFD9D9D9),
@@ -153,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                 ],
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -314,7 +333,7 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 90, // Increased height to accommodate higher nav items
+      height: 110, // Increased height to make nav bar appear even higher up
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -336,7 +355,7 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
             child: ClipPath(
               clipper: CurvedBottomClipper(),
               child: Container(
-                height: 85,
+                height: 105,
                 decoration: BoxDecoration(
                   color: widget.backgroundColor,
                   borderRadius: const BorderRadius.only(
@@ -364,7 +383,7 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
 
           // Enhanced Floating Action Button with deeper curve positioning
           Positioned(
-            top: -30, // Positioned even higher to create more dramatic curve effect
+            top: -20, // Moved down to be less high
             left: (MediaQuery.of(context).size.width - 64) / 2,
             child: GestureDetector(
               onTapDown: (_) {
