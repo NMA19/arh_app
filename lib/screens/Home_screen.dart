@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'CurvedBottomNavigationBar.dart';
+import 'FavoritesScreen.dart';
+import 'StoreScreen.dart';
+import 'ProfileScreen.dart';
+import 'inspiration_screen.dart' show InspirationScreen;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -28,20 +34,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _animationController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   void _onNavItemTapped(int index) {
+    if (index == _selectedIndex) return;
+
     setState(() {
       _selectedIndex = index;
     });
     _animationController.reset();
     _animationController.forward();
 
-    // Handle navigation
     switch (index) {
       case 0:
-      // Already on home - do nothing
         break;
       case 1:
         Navigator.pushReplacement(
@@ -71,6 +78,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _onSearchPressed() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Search'),
+          content: TextField(
+            controller: _searchController,
+            decoration: const InputDecoration(
+              hintText: 'Enter search term...',
+              prefixIcon: Icon(Icons.search),
+            ),
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _searchController.clear();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                print('Searching for: ${_searchController.text}');
+                Navigator.of(context).pop();
+                _searchController.clear();
+              },
+              child: const Text('Search'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,7 +124,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // AppBar with logo
               Row(
                 children: [
                   Image.asset('assets/icons/app_icon.png', width: 100, height: 100),
@@ -89,8 +131,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
               const SizedBox(height: 20),
-
-              // Project Box
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -105,25 +145,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Your Project",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF586C7C),
-                            ),
-                          ),
+                          const Text("Your Project",
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF586C7C))),
                           const SizedBox(height: 8),
-                          const Text(
-                            "Start Modeling your\narchitectural projects here",
-                            style: TextStyle(color: Colors.black54, fontSize: 13),
-                          ),
+                          const Text("Start Modeling your\narchitectural projects here",
+                              style: TextStyle(color: Colors.black54, fontSize: 13)),
                           const SizedBox(height: 12),
                           ElevatedButton(
-                            onPressed: () {
-                              // Add your modeling functionality here
-                              print('Start modeling pressed');
-                            },
+                            onPressed: () => print('Start modeling pressed'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF586C7C),
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -131,10 +163,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              "Start modeling",
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            child: const Text("Start modeling", style: TextStyle(color: Colors.white)),
                           ),
                           const SizedBox(height: 8),
                           const Text("Recent design", style: TextStyle(color: Colors.black87)),
@@ -150,23 +179,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
               const SizedBox(height: 28),
-
-              // Store and Inspiration
               Row(
                 children: [
                   _buildSquareBox('assets/images/Store.png', 'Store', 'Explore furniture & decor for your project', () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const StoreScreen()),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const StoreScreen()));
                   }),
                   const SizedBox(width: 16),
-                  _buildSquareBox('assets/images/Inspiration.png', 'Inspiration', 'Browse through various design ideas to fuel your creativity', _onInspirationTapped),
+                  _buildSquareBox('assets/images/Inspiration.png', 'Inspiration',
+                      'Browse through various design ideas to fuel your creativity', _onInspirationTapped),
                 ],
               ),
               const SizedBox(height: 16),
-
-              // AI Scanner, AR Viewer, Magic Plan
               Row(
                 children: [
                   _buildSquareBox('assets/images/AI scanner.png', 'AI scanner', '', () {
@@ -183,15 +206,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
               const SizedBox(height: 16),
-
-              // LoadEas & SOS
               Row(
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        print('LoadEas pressed');
-                      },
+                      onTap: () => print('LoadEas pressed'),
                       child: Container(
                         height: 92,
                         padding: const EdgeInsets.only(top: 36, bottom: 16),
@@ -202,10 +221,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         child: const Center(
                           child: Text(
                             'LoadEas',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                         ),
                       ),
@@ -214,9 +230,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const SizedBox(width: 16),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () {
-                        print('SOS pressed');
-                      },
+                      onTap: () => print('SOS pressed'),
                       child: Container(
                         height: 92,
                         padding: const EdgeInsets.only(top: 36, bottom: 16),
@@ -225,48 +239,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Center(
-                          child: Image.asset(
-                            'assets/images/Sos.png',
-                            width: 60,
-                            height: 60,
-                          ),
+                          child: Image.asset('assets/images/Sos.png', width: 60, height: 60),
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 80),
             ],
           ),
         ),
       ),
-      // Original Flutter BottomNavigationBar
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
+      bottomNavigationBar: CurvedBottomNavigationBar(
+        selectedIndex: _selectedIndex,
         onTap: _onNavItemTapped,
-        selectedItemColor: const Color(0xFF7993AE),
-        unselectedItemColor: Colors.grey[600],
         backgroundColor: Colors.white,
-        elevation: 8,
+        selectedItemColor: const Color(0xFF7993AE),
+        unselectedItemColor: Colors.grey,
+        fabIcon: const Icon(Icons.search, color: Colors.white),
+        fabBackgroundColor: const Color(0xFF7993AE),
+        onFabPressed: _onSearchPressed,
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.store),
-            label: 'Store',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+          CurvedBottomNavigationBarItem(icon: Icons.home, label: 'Home'),
+          CurvedBottomNavigationBarItem(icon: Icons.favorite, label: 'Favorites'),
+          CurvedBottomNavigationBarItem(icon: Icons.store, label: 'Store'),
+          CurvedBottomNavigationBarItem(icon: Icons.person, label: 'Profile'),
         ],
       ),
     );
@@ -295,272 +293,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// Example pages with original navigation bar
-class FavoritesScreen extends StatefulWidget {
-  const FavoritesScreen({super.key});
-
-  @override
-  State<FavoritesScreen> createState() => _FavoritesScreenState();
-}
-
-class _FavoritesScreenState extends State<FavoritesScreen> with TickerProviderStateMixin {
-  int _selectedIndex = 1; // Favorites is selected
-  late AnimationController _animationController;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _onNavItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    _animationController.reset();
-    _animationController.forward();
-
-    // Handle navigation
-    switch (index) {
-      case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-        break;
-      case 1:
-      // Already on favorites - do nothing
-        break;
-      case 2:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const StoreScreen()),
-        );
-        break;
-      case 3:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const ProfileScreen()),
-        );
-        break;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.favorite,
-              size: 80,
-              color: Color(0xFF7993AE),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Favorites',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF586C7C),
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Your favorite items will appear here',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
-            ),
-          ],
-        ),
-      ),
-      // Original Flutter BottomNavigationBar
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        onTap: _onNavItemTapped,
-        selectedItemColor: const Color(0xFF7993AE),
-        unselectedItemColor: Colors.grey[600],
-        backgroundColor: Colors.white,
-        elevation: 8,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.store),
-            label: 'Store',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Example Store Screen without navigation bar
-class StoreScreen extends StatelessWidget {
-  const StoreScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Store'),
-        backgroundColor: const Color(0xFF7993AE),
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.store,
-              size: 80,
-              color: Color(0xFF7993AE),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Store',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF586C7C),
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Browse furniture and decor items',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
-            ),
-          ],
-        ),
-      ),
-      // No navigation bar on this page
-    );
-  }
-}
-
-// Example Profile Screen without navigation bar
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: const Color(0xFF7993AE),
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.person,
-              size: 80,
-              color: Color(0xFF7993AE),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Profile',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF586C7C),
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Manage your profile and settings',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
-            ),
-          ],
-        ),
-      ),
-      // No navigation bar on this page
-    );
-  }
-}
-
-// Placeholder for InspirationScreen
-class InspirationScreen extends StatelessWidget {
-  const InspirationScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Inspiration'),
-        backgroundColor: const Color(0xFF7993AE),
-        foregroundColor: Colors.white,
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.lightbulb_outline,
-              size: 80,
-              color: Color(0xFF7993AE),
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Inspiration',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF586C7C),
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Browse through various design ideas to fuel your creativity',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black54,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
         ),
       ),
     );
