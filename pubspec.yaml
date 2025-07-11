@@ -45,3 +45,5 @@ flutter:
     - assets/images/Store/
     - assets/images/Store/Categories/
     - assets/images/Arviewer/
+    - assets/images/aipic/
+    - assets/icons/scan.png

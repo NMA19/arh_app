@@ -5,6 +5,7 @@ import 'StoreScreen.dart';
 import 'ProfileScreen.dart';
 import 'inspiration_screen.dart' show InspirationScreen;
 import 'ar_viewer_screen.dart'; // make sure the filename matches your actual file
+import 'ai_scanner_screen.dart'; // Adjust if filename is different
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -194,8 +195,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Row(
                 children: [
                   _buildSquareBox('assets/images/AI scanner.png', 'AI scanner', '', () {
-                    print('AI Scanner pressed');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const AIScannerScreen()));
                   }),
+
+
                   const SizedBox(width: 16),
                   _buildSquareBox('assets/images/AR viewer.png', 'AR viewer', '', () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const ARViewerScreen()));
