@@ -160,11 +160,9 @@ class _BaseNavigationWidgetState extends State<BaseNavigationWidget> {
         backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF7993AE),
         unselectedItemColor: Colors.grey,
-        fabIcon: widget.showSearchBar
-            ? const Icon(Icons.search, color: Colors.white)
-            : const Icon(Icons.add, color: Colors.white), // Change FAB icon when search is disabled
+        fabIcon: const Icon(Icons.search, color: Colors.white), // Changed to always show search icon
         fabBackgroundColor: const Color(0xFF7993AE),
-        onFabPressed: widget.showSearchBar ? _onSearchPressed : () {}, // Empty function when search is disabled
+        onFabPressed: _onSearchPressed, // Always use search function
         items: const [
           CurvedBottomNavigationBarItem(icon: Icons.home, label: 'Home'),
           CurvedBottomNavigationBarItem(

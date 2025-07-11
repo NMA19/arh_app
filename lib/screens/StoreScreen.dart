@@ -79,10 +79,11 @@ class _StoreScreenState extends State<StoreScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Logo section
+            // Logo section - moved to the left
             Container(
               padding: const EdgeInsets.all(20),
-              child: Center(
+              child: Align(
+                alignment: Alignment.centerLeft,
                 child: Image.asset(
                   'assets/icons/app_icon.png', // Replace with your logo path
                   height: 100,
@@ -106,45 +107,48 @@ class _StoreScreenState extends State<StoreScreen> {
               ),
             ),
 
-            // Search bar with filter
+            // Search bar with search icon and filter
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Icon(Icons.search, color: Colors.grey, size: 20),
+                    ),
+                    const Expanded(
                       child: TextField(
-                        controller: _searchController,
-                        decoration: const InputDecoration(
-                          hintText: 'Search products...',
+                        decoration: InputDecoration(
+                          hintText: 'Search for ',
                           border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: EdgeInsets.symmetric(vertical: 12),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF7993AE),
-                      borderRadius: BorderRadius.circular(12),
+                    Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFA75726),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.filter_list, color: Colors.white, size: 20),
+                        onPressed: () => _showFilterDialog(context),
+                      ),
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.filter_list, color: Colors.white),
-                      onPressed: () => _showFilterDialog(context),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 
             const SizedBox(height: 24),
 
-            // Categories section
+            // Categories section with updated background colors
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -166,6 +170,11 @@ class _StoreScreenState extends State<StoreScreen> {
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         final category = categories[index];
+                        // Second category gets special background color
+                        final backgroundColor = index == 1
+                            ? const Color(0xFFFFA167).withOpacity(0.53)
+                            : const Color(0xFFCDAF33).withOpacity(0.2);
+
                         return Container(
                           margin: const EdgeInsets.only(right: 16),
                           child: Column(
@@ -174,7 +183,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                 width: 70,
                                 height: 70,
                                 decoration: BoxDecoration(
-                                  color: Colors.grey[100],
+                                  color: backgroundColor,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Image.asset(
@@ -211,7 +220,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
             const SizedBox(height: 32),
 
-            // Products section
+            // Products section with vertical rectangular cards
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -227,7 +236,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
-                    height: 280,
+                    height: 350, // Increased height for vertical cards
                     child: PageView.builder(
                       controller: _productPageController,
                       itemCount: products.length,
@@ -279,7 +288,7 @@ class _StoreScreenState extends State<StoreScreen> {
               ),
             ),
 
-            const SizedBox(height: 100), // Space for bottom navigation
+            const SizedBox(height: 40), // Reduced space for bottom navigation
           ],
         ),
       ),
@@ -288,6 +297,7 @@ class _StoreScreenState extends State<StoreScreen> {
 
   Widget _buildProductCard(ProductItem product) {
     return Container(
+      width: 200, // Fixed width for vertical rectangular shape
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
@@ -303,103 +313,125 @@ class _StoreScreenState extends State<StoreScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product image
+          // Product image with rating overlay
           Container(
-            height: 140,
+            height: 180, // Increased height for vertical card
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               color: Colors.grey[100],
             ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Image.asset(
-                product.imagePath,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey[200],
-                    child: const Icon(
-                      Icons.image,
-                      color: Colors.grey,
-                      size: 40,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-
-          // Product details
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Stack(
               children: [
-                // Rating
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      product.rating.toString(),
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Product name
-                Text(
-                  product.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2C3E50),
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-
-                // Product type
-                Text(
-                  product.type,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: Image.asset(
+                    product.imagePath,
+                    width: double.infinity,
+                    height: 180,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: Colors.grey[200],
+                        child: const Icon(
+                          Icons.image,
+                          color: Colors.grey,
+                          size: 40,
+                        ),
+                      );
+                    },
                   ),
                 ),
-                const SizedBox(height: 8),
-
-                // Price
-                Text(
-                  '\$${product.price.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF7993AE),
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Action button
-                Align(
-                  alignment: Alignment.centerLeft,
+                // Rating overlay positioned at bottom right
+                Positioned(
+                  bottom: 12,
+                  right: 12,
                   child: Container(
-                    width: 40,
-                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF7993AE),
-                      borderRadius: BorderRadius.circular(20),
+                      color: const Color(0xFFFFF0BA), // Updated background color
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: IconButton(
-                      icon: const Icon(Icons.add, color: Colors.white, size: 20),
-                      onPressed: () => _showProductDetails(product),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.star, color: Color(0xFFF4BB00), size: 14), // Updated star color
+                        const SizedBox(width: 2),
+                        Text(
+                          product.rating.toString(),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFF4BB00), // Updated text color
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
+            ),
+          ),
+
+          // Product details
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Product name
+                  Text(
+                    product.name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2C3E50),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Product type
+                  Text(
+                    product.type,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Price
+                  Text(
+                    '\$${product.price.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF7993AE),
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  // Action button - moved to the right
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF7993AE),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.add, color: Colors.white, size: 20),
+                        onPressed: () => _showProductDetails(product),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -587,7 +619,7 @@ class _StoreScreenState extends State<StoreScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  const Icon(Icons.star, color: Colors.amber, size: 20),
+                  const Icon(Icons.star, color: Color(0xFFF4BB00), size: 20), // Updated star color
                   const SizedBox(width: 4),
                   Text(
                     product.rating.toString(),
