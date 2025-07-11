@@ -13,6 +13,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   curved_navigation_bar: ^1.0.3   # ✅ Add this line
   animated_bottom_navigation_bar: ^1.1.0
+  flutter_staggered_grid_view: ^0.7.0  # ✅ Moved to dependencies
 
 dev_dependencies:
   flutter_test:

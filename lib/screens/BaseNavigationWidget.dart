@@ -99,8 +99,9 @@ class _BaseNavigationWidgetState extends State<BaseNavigationWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
+      backgroundColor: Colors.white, // White background
+      appBar: widget.title.isNotEmpty
+          ? AppBar(
         title: Text(widget.title),
         backgroundColor: const Color(0xFF7993AE),
         foregroundColor: Colors.white,
@@ -112,12 +113,13 @@ class _BaseNavigationWidgetState extends State<BaseNavigationWidget> {
             onPressed: _onSearchPressed,
           ),
         ]
-            : null,
-      ),
+            : null, // Remove search icon when showSearchBar is false
+      )
+          : null, // Remove AppBar completely when title is empty
       body: SafeArea(
         child: Column(
           children: [
-            // Search Bar at the top (optional)
+            // Only show search bar if showSearchBar is true
             if (widget.showSearchBar)
               Container(
                 padding: const EdgeInsets.all(16.0),
@@ -158,9 +160,11 @@ class _BaseNavigationWidgetState extends State<BaseNavigationWidget> {
         backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF7993AE),
         unselectedItemColor: Colors.grey,
-        fabIcon: const Icon(Icons.search, color: Colors.white),
+        fabIcon: widget.showSearchBar
+            ? const Icon(Icons.search, color: Colors.white)
+            : const Icon(Icons.add, color: Colors.white), // Change FAB icon when search is disabled
         fabBackgroundColor: const Color(0xFF7993AE),
-        onFabPressed: _onSearchPressed,
+        onFabPressed: widget.showSearchBar ? _onSearchPressed : () {}, // Empty function when search is disabled
         items: const [
           CurvedBottomNavigationBarItem(icon: Icons.home, label: 'Home'),
           CurvedBottomNavigationBarItem(
