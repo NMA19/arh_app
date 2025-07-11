@@ -4,6 +4,7 @@ import 'FavoritesScreen.dart';
 import 'StoreScreen.dart';
 import 'ProfileScreen.dart';
 import 'inspiration_screen.dart' show InspirationScreen;
+import 'ar_viewer_screen.dart'; // make sure the filename matches your actual file
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -197,8 +198,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   }),
                   const SizedBox(width: 16),
                   _buildSquareBox('assets/images/AR viewer.png', 'AR viewer', '', () {
-                    print('AR Viewer pressed');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ARViewerScreen()));
                   }),
+
+
                   const SizedBox(width: 16),
                   _buildSquareBox('assets/images/Magic plan.png', 'Magic plan', '', () {
                     print('Magic Plan pressed');
