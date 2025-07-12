@@ -4,8 +4,9 @@ import 'FavoritesScreen.dart';
 import 'StoreScreen.dart';
 import 'ProfileScreen.dart';
 import 'inspiration_screen.dart' show InspirationScreen;
-import 'ar_viewer_screen.dart'; // make sure the filename matches your actual file
-import 'ai_scanner_screen.dart'; // Adjust if filename is different
+import 'ar_viewer_screen.dart';
+import 'ai_scanner_screen.dart';
+import 'discober_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -81,38 +82,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _onSearchPressed() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Search'),
-          content: TextField(
-            controller: _searchController,
-            decoration: const InputDecoration(
-              hintText: 'Enter search term...',
-              prefixIcon: Icon(Icons.search),
-            ),
-            autofocus: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _searchController.clear();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                print('Searching for: ${_searchController.text}');
-                Navigator.of(context).pop();
-                _searchController.clear();
-              },
-              child: const Text('Search'),
-            ),
-          ],
-        );
-      },
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const DiscoverScreen()),
     );
   }
 
@@ -197,14 +169,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   _buildSquareBox('assets/images/AI scanner.png', 'AI scanner', '', () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const AIScannerScreen()));
                   }),
-
-
                   const SizedBox(width: 16),
                   _buildSquareBox('assets/images/AR viewer.png', 'AR viewer', '', () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const ARViewerScreen()));
                   }),
-
-
                   const SizedBox(width: 16),
                   _buildSquareBox('assets/images/Magic plan.png', 'Magic plan', '', () {
                     print('Magic Plan pressed');

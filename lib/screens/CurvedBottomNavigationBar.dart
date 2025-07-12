@@ -1,5 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'Home_screen.dart';
+import 'FavoritesScreen.dart';
+import 'StoreScreen.dart';
+import 'ProfileScreen.dart';
+import 'discober_screen.dart';
 
 class CurvedBottomNavigationBar extends StatefulWidget {
   final int selectedIndex;
@@ -143,7 +148,11 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
                 _fabAnimationController.reverse();
                 _rippleAnimationController.forward().then((_) {
                   _rippleAnimationController.reset();
-                });                widget.onFabPressed();
+                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const DiscoverScreen()),
+                );
               },
               onTapCancel: () => _fabAnimationController.reverse(),
               child: AnimatedBuilder(
@@ -205,7 +214,34 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
     final item = widget.items[index];
 
     return GestureDetector(
-      onTap: () => widget.onTap(index),
+      onTap: () {
+        switch (index) {
+          case 0:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+            break;
+          case 1:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const FavoritesScreen()),
+            );
+            break;
+          case 2:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const StoreScreen()),
+            );
+            break;
+          case 3:
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+            break;
+        }
+      },
       behavior: HitTestBehavior.opaque,
       child: Column(
         mainAxisSize: MainAxisSize.min,
