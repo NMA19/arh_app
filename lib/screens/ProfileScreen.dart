@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'BaseNavigationWidget.dart';
+import 'chat_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -48,7 +49,19 @@ class ProfileScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (context) => const AccountSettingsForm()),
               );
+
             }),
+            const Divider(thickness: 1, color: Colors.grey),
+            SettingItem(
+              title: 'Chat',
+              icon: Icons.chat,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ChatScreen()),
+                );
+              },
+            ),
             const Divider(thickness: 1, color: Colors.grey),
             const SettingItem(title: 'Payment', icon: Icons.payment),
             const Divider(thickness: 1, color: Colors.grey),
