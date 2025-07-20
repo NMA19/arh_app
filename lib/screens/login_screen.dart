@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
-import 'loginwithphone_screen.dart';
-import 'reset_password_screen.dart'; // ✅ Import is correct
+//import 'loginwithphone_screen.dart';
+import 'Home_screen.dart';
+import 'reset_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -132,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const LoginWithPhoneScreen()),
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
                   );
                 },
                 child: const Text(

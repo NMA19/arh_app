@@ -13,7 +13,6 @@ class _StoreScreenState extends State<StoreScreen> {
   final PageController _productPageController = PageController();
   final PageController _servicesPageController = PageController();
 
-  // Sample data for categories
   final List<CategoryItem> categories = [
     CategoryItem(name: 'Chairs', imagePath: 'assets/images/Store/Categories/Black.png'),
     CategoryItem(name: 'Tables', imagePath: 'assets/images/Store/Categories/Black (1).png'),
@@ -22,7 +21,6 @@ class _StoreScreenState extends State<StoreScreen> {
     CategoryItem(name: 'Lighting', imagePath: 'assets/images/Store/Categories/Black (4).png'),
   ];
 
-  // Sample data for products
   final List<ProductItem> products = [
     ProductItem(
       name: 'Serene Interior Decor',
@@ -47,28 +45,6 @@ class _StoreScreenState extends State<StoreScreen> {
     ),
   ];
 
-  // Sample data for services
-  final List<ServiceItem> services = [
-    ServiceItem(
-      title: 'Interior Design Consultation',
-      description: 'Professional interior design services for your home',
-      price: 200.00,
-      imagePath: 'assets/images/Store/Serene Interior Decor.png',
-    ),
-    ServiceItem(
-      title: 'Custom Furniture Design',
-      description: 'Bespoke furniture tailored to your needs',
-      price: 500.00,
-      imagePath: 'assets/images/Store/Warm Toned Elegance_ Sophisticated Home Office.png',
-    ),
-    ServiceItem(
-      title: 'Space Planning',
-      description: 'Optimize your space with professional planning',
-      price: 150.00,
-      imagePath: 'assets/images/Store/Serene Interior with Orange Pillow.png',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return BaseNavigationWidget(
@@ -79,13 +55,12 @@ class _StoreScreenState extends State<StoreScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Logo section - moved to the left
             Container(
               padding: const EdgeInsets.all(20),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Image.asset(
-                  'assets/icons/app_icon.png', // Replace with your logo path
+                  'assets/icons/app_icon.png',
                   height: 100,
                   width: 100,
                   errorBuilder: (context, error, stackTrace) {
@@ -96,18 +71,12 @@ class _StoreScreenState extends State<StoreScreen> {
                         color: const Color(0xFF7993AE),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(
-                        Icons.store,
-                        color: Colors.white,
-                        size: 40,
-                      ),
+                      child: const Icon(Icons.store, color: Colors.white, size: 40),
                     );
                   },
                 ),
               ),
             ),
-
-            // Search bar with search icon and filter
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -145,10 +114,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 ),
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Categories section with updated background colors
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -156,11 +122,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 children: [
                   const Text(
                     'Categories',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2C3E50),
-                    ),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50)),
                   ),
                   const SizedBox(height: 16),
                   SizedBox(
@@ -170,11 +132,9 @@ class _StoreScreenState extends State<StoreScreen> {
                       itemCount: categories.length,
                       itemBuilder: (context, index) {
                         final category = categories[index];
-                        // Second category gets special background color
                         final backgroundColor = index == 1
                             ? const Color(0xFFFFA167).withOpacity(0.53)
                             : const Color(0xFFCDAF33).withOpacity(0.2);
-
                         return Container(
                           margin: const EdgeInsets.only(right: 16),
                           child: Column(
@@ -188,26 +148,11 @@ class _StoreScreenState extends State<StoreScreen> {
                                 ),
                                 child: Image.asset(
                                   category.imagePath,
-                                  width: 70,
-                                  height: 70,
                                   fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Icon(
-                                      Icons.category,
-                                      color: const Color(0xFF7993AE),
-                                      size: 30,
-                                    );
-                                  },
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Text(
-                                category.name,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                              Text(category.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
                             ],
                           ),
                         );
@@ -217,78 +162,29 @@ class _StoreScreenState extends State<StoreScreen> {
                 ],
               ),
             ),
-
             const SizedBox(height: 32),
-
-            // Products section with vertical rectangular cards
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Featured Products',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2C3E50),
-                    ),
-                  ),
+                  const Text('Featured Products', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50))),
                   const SizedBox(height: 16),
                   SizedBox(
-                    height: 350, // Increased height for vertical cards
+                    height: 380,
                     child: PageView.builder(
                       controller: _productPageController,
                       itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        return Container(
-                          margin: const EdgeInsets.only(right: 16),
-                          child: _buildProductCard(product),
-                        );
-                      },
+                      itemBuilder: (context, index) => Container(
+                        margin: const EdgeInsets.only(right: 16),
+                        child: _buildProductCard(products[index]),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 32),
-
-            // Services section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Explore Our Services',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2C3E50),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    height: 200,
-                    child: PageView.builder(
-                      controller: _servicesPageController,
-                      itemCount: services.length,
-                      itemBuilder: (context, index) {
-                        final service = services[index];
-                        return Container(
-                          margin: const EdgeInsets.only(right: 16),
-                          child: _buildServiceCard(service),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 40), // Reduced space for bottom navigation
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -297,25 +193,20 @@ class _StoreScreenState extends State<StoreScreen> {
 
   Widget _buildProductCard(ProductItem product) {
     return Container(
-      width: 200, // Fixed width for vertical rectangular shape
+      width: 240,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
+          BoxShadow(color: Colors.grey.withOpacity(0.1), spreadRadius: 1, blurRadius: 10, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Product image with rating overlay
           Container(
-            height: 180, // Increased height for vertical card
+            height: 200,
+            width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               color: Colors.grey[100],
@@ -324,46 +215,33 @@ class _StoreScreenState extends State<StoreScreen> {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Image.asset(
-                    product.imagePath,
+                  child: Container(
                     width: double.infinity,
-                    height: 180,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[200],
-                        child: const Icon(
-                          Icons.image,
-                          color: Colors.grey,
-                          size: 40,
-                        ),
-                      );
-                    },
+                    height: double.infinity,
+                    child: Image.asset(
+                      product.imagePath,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 50),
+                        );
+                      },
+                    ),
                   ),
                 ),
-                // Rating overlay positioned at bottom right
                 Positioned(
                   bottom: 12,
                   right: 12,
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF0BA), // Updated background color
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    decoration: BoxDecoration(color: const Color(0xFFFFF0BA), borderRadius: BorderRadius.circular(12)),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.star, color: Color(0xFFF4BB00), size: 14), // Updated star color
+                        const Icon(Icons.star, color: Color(0xFFFFC601), size: 14),
                         const SizedBox(width: 2),
-                        Text(
-                          product.rating.toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFF4BB00), // Updated text color
-                          ),
-                        ),
+                        Text(product.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFFFFC601))),
                       ],
                     ),
                   ),
@@ -371,59 +249,32 @@ class _StoreScreenState extends State<StoreScreen> {
               ],
             ),
           ),
-
-          // Product details
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Product name
                   Text(
-                    product.name,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2C3E50),
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                      product.name,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50)),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis
                   ),
                   const SizedBox(height: 4),
-
-                  // Product type
-                  Text(
-                    product.type,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  Text(product.type, style: const TextStyle(fontSize: 12, color: Colors.grey)),
                   const SizedBox(height: 8),
-
-                  // Price
                   Text(
-                    '\$${product.price.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF7993AE),
-                    ),
+                      '\$${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFA75726))
                   ),
-
                   const Spacer(),
-
-                  // Action button - moved to the right
                   Align(
                     alignment: Alignment.centerRight,
                     child: Container(
                       width: 40,
                       height: 40,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF7993AE),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                      decoration: BoxDecoration(color: const Color(0xFF7993AE), borderRadius: BorderRadius.circular(20)),
                       child: IconButton(
                         icon: const Icon(Icons.add, color: Colors.white, size: 20),
                         onPressed: () => _showProductDetails(product),
@@ -439,104 +290,14 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  Widget _buildServiceCard(ServiceItem service) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(
-          image: AssetImage(service.imagePath),
-          fit: BoxFit.cover,
-          onError: (error, stackTrace) {},
-        ),
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.transparent,
-              Colors.black.withOpacity(0.7),
-            ],
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                service.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                service.description,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.white70,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'From \$${service.price.toStringAsFixed(0)}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Learn More',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Filter Products'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Filter options will be implemented here'),
-            const SizedBox(height: 16),
-            // Add your filter options here
-          ],
-        ),
+        content: const Text('Filter options will be implemented here'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
         ],
       ),
     );
@@ -548,158 +309,126 @@ class _StoreScreenState extends State<StoreScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
+        height: MediaQuery.of(context).size.height * 0.9,
         decoration: const BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle bar
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                    child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2)
+                        )
+                    )
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  height: 240,
+                  width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.grey[100]
+                  ),
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        product.imagePath,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 80),
+                          );
+                        },
+                      )
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
-
-              // Product image
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  color: Colors.grey[100],
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.star, color: Color(0xFFFFC601), size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                        product.rating.toString(),
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFFFC601))
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                        '(${(product.rating * 234).toInt()} reviews)',
+                        style: const TextStyle(fontSize: 12, color: Colors.grey)
+                    ),
+                  ],
                 ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    product.imagePath,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
+                const SizedBox(height: 12),
+                Text(product.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50))),
+                const SizedBox(height: 6),
+                Text(product.type, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                const SizedBox(height: 12),
+                const Text('Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50))),
+                const SizedBox(height: 6),
+                const Text('This is a premium quality product crafted with attention to detail and designed to enhance your living space with style and comfort.', style: TextStyle(fontSize: 13, color: Colors.grey, height: 1.4)),
+                const SizedBox(height: 16),
+                const Text('You may also like', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF2C3E50))),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 50,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: products.length,
+                    itemBuilder: (context, index) => Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
                         color: Colors.grey[200],
-                        child: const Icon(
-                          Icons.image,
-                          color: Colors.grey,
-                          size: 40,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Product details
-              Text(
-                product.name,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2C3E50),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                product.type,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Icon(Icons.star, color: Color(0xFFF4BB00), size: 20), // Updated star color
-                  const SizedBox(width: 4),
-                  Text(
-                    product.rating.toString(),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                '\$${product.price.toStringAsFixed(2)}',
-                style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF7993AE),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Description
-              const Text(
-                'Description',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2C3E50),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'This is a premium quality product designed with attention to detail and crafted with the finest materials. Perfect for modern homes and offices.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                  height: 1.5,
-                ),
-              ),
-
-              const Spacer(),
-
-              // Action buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('${product.name} added to cart!')),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF7993AE),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.asset(
+                          products[index].imagePath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(Icons.image_not_supported, color: Colors.grey, size: 25);
+                          },
                         ),
                       ),
-                      child: const Text(
-                        'Add to Cart',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFF7993AE)),
-                      borderRadius: BorderRadius.circular(12),
+                ),
+                const SizedBox(height: 10),
+                const Text('Color: Soft Beige', style: TextStyle(fontSize: 13, color: Color(0xFF7993AE))),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFA75726),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: IconButton(
-                      onPressed: () {
-                        // Add to favorites
-                      },
-                      icon: const Icon(Icons.favorite_border, color: Color(0xFF7993AE)),
+                    child: Text(
+                        'Buy Our Services 899.99 ',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -707,11 +436,9 @@ class _StoreScreenState extends State<StoreScreen> {
   }
 }
 
-// Data models
 class CategoryItem {
   final String name;
   final String imagePath;
-
   CategoryItem({required this.name, required this.imagePath});
 }
 
@@ -721,26 +448,5 @@ class ProductItem {
   final double price;
   final double rating;
   final String imagePath;
-
-  ProductItem({
-    required this.name,
-    required this.type,
-    required this.price,
-    required this.rating,
-    required this.imagePath,
-  });
-}
-
-class ServiceItem {
-  final String title;
-  final String description;
-  final double price;
-  final String imagePath;
-
-  ServiceItem({
-    required this.title,
-    required this.description,
-    required this.price,
-    required this.imagePath,
-  });
+  ProductItem({required this.name, required this.type, required this.price, required this.rating, required this.imagePath});
 }
