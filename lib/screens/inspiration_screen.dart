@@ -167,7 +167,7 @@ class _InspirationScreenState extends State<InspirationScreen> with TickerProvid
           CurvedBottomNavigationBarItem(icon: Icons.home, label: 'Home'),
           CurvedBottomNavigationBarItem(icon: Icons.favorite, label: 'Favorites'),
           CurvedBottomNavigationBarItem(icon: Icons.store, label: 'Store'),
-          CurvedBottomNavigationBarItem(icon: Icons.person, label: 'Profile'),
+          CurvedBottomNavigationBarItem(icon: Icons.info_outline, label: 'Details'),
         ],
       ),
     );

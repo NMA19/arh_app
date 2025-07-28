@@ -3,7 +3,8 @@ import 'CurvedBottomNavigationBar.dart';
 import 'Home_screen.dart';
 import 'FavoritesScreen.dart';
 import 'StoreScreen.dart';
-import 'ProfileScreen.dart';
+import 'details_screen.dart';
+import '';
 
 class BaseNavigationWidget extends StatefulWidget {
   final Widget child;
@@ -41,7 +42,7 @@ class _BaseNavigationWidgetState extends State<BaseNavigationWidget> {
         destination = const StoreScreen();
         break;
       case 3:
-        destination = const ProfileScreen();
+        destination = const DetailsScreen();
         break;
       default:
         return;
@@ -168,7 +169,7 @@ class _BaseNavigationWidgetState extends State<BaseNavigationWidget> {
           CurvedBottomNavigationBarItem(
               icon: Icons.favorite, label: 'Favorites'),
           CurvedBottomNavigationBarItem(icon: Icons.store, label: 'Store'),
-          CurvedBottomNavigationBarItem(icon: Icons.person, label: 'Profile'),
+          CurvedBottomNavigationBarItem(icon: Icons.person, label: 'Details'),
         ],
       ),
     );

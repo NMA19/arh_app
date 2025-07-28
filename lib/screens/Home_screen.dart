@@ -3,6 +3,7 @@ import 'CurvedBottomNavigationBar.dart';
 import 'FavoritesScreen.dart';
 import 'StoreScreen.dart';
 import 'ProfileScreen.dart';
+import 'details_screen.dart';
 import 'inspiration_screen.dart' show InspirationScreen;
 import 'ar_viewer_screen.dart';
 import 'ai_scanner_screen.dart';
@@ -68,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       case 3:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          MaterialPageRoute(builder: (context) => const DetailsScreen()),
         );
         break;
     }
@@ -88,6 +89,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _onSettingsPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,6 +110,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 children: [
                   Image.asset('assets/icons/app_icon.png', width: 100, height: 100),
                   const SizedBox(width: 8),
+                  const Spacer(), // This pushes the settings button to the right
+                  IconButton(
+                    onPressed: _onSettingsPressed,
+                    icon: const Icon(
+                      Icons.settings,
+                      color: Color(0xFF586C7C),
+                      size: 28,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
@@ -238,7 +255,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           CurvedBottomNavigationBarItem(icon: Icons.home, label: 'Home'),
           CurvedBottomNavigationBarItem(icon: Icons.favorite, label: 'Favorites'),
           CurvedBottomNavigationBarItem(icon: Icons.store, label: 'Store'),
-          CurvedBottomNavigationBarItem(icon: Icons.person, label: 'Profile'),
+          CurvedBottomNavigationBarItem(icon: Icons.info_outline, label: 'Details'),
         ],
       ),
     );

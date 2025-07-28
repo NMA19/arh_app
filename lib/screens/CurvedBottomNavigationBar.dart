@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'Home_screen.dart';
 import 'FavoritesScreen.dart';
 import 'StoreScreen.dart';
-import 'ProfileScreen.dart';
+import 'details_screen.dart';
 import 'discober_screen.dart';
 
 class CurvedBottomNavigationBar extends StatefulWidget {
@@ -237,7 +237,7 @@ class _CurvedBottomNavigationBarState extends State<CurvedBottomNavigationBar>
           case 3:
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              MaterialPageRoute(builder: (context) => const DetailsScreen()),
             );
             break;
         }
