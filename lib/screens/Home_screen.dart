@@ -8,6 +8,7 @@ import 'inspiration_screen.dart' show InspirationScreen;
 import 'ar_viewer_screen.dart';
 import 'ai_scanner_screen.dart';
 import 'discober_screen.dart';
+import 'sos_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -96,6 +97,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _onSosPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SosScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 children: [
                   Image.asset('assets/icons/app_icon.png', width: 100, height: 100),
                   const SizedBox(width: 8),
-                  const Spacer(), // This pushes the settings button to the right
+                  const Spacer(),
                   IconButton(
                     onPressed: _onSettingsPressed,
                     icon: const Icon(
@@ -221,10 +229,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const SizedBox(width: 16),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => print('SOS pressed'),
+                      onTap: _onSosPressed,
                       child: Container(
                         height: 92,
-                        padding: const EdgeInsets.only(top: 36, bottom: 16),
+                        padding: const EdgeInsets.only(top: 16, bottom: 16),
                         decoration: BoxDecoration(
                           color: const Color(0xFFD9D9D9),
                           borderRadius: BorderRadius.circular(16),
