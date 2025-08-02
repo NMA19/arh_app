@@ -9,6 +9,7 @@ import 'ar_viewer_screen.dart';
 import 'ai_scanner_screen.dart';
 import 'discober_screen.dart';
 import 'sos_screen.dart';
+import 'magicPlan_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -104,6 +105,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _onMagicPlanPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MagicPlanScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: TextStyle(color: Colors.black54, fontSize: 13)),
                           const SizedBox(height: 12),
                           ElevatedButton(
-                            onPressed: () => print('Start modeling pressed'),
+                            onPressed: _onMagicPlanPressed,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF586C7C),
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
@@ -199,9 +207,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const ARViewerScreen()));
                   }),
                   const SizedBox(width: 16),
-                  _buildSquareBox('assets/images/Magic plan.png', 'Magic plan', '', () {
-                    print('Magic Plan pressed');
-                  }),
+                  _buildSquareBox('assets/images/Magic plan.png', 'Magic plan', '', _onMagicPlanPressed),
                 ],
               ),
               const SizedBox(height: 16),
