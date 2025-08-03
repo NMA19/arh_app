@@ -11,6 +11,7 @@ import 'discober_screen.dart';
 import 'sos_screen.dart';
 import 'magicPlan_screen.dart';
 import 'LoadEas_screen.dart';
+import 'chatboot_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -105,6 +106,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       MaterialPageRoute(builder: (context) => const SosScreen()),
     );
   }
+
+  void _onChatbootPressed() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ChatbootScreen()),
+    );
+  }
+
 
   void _onMagicPlanPressed() {
     Navigator.push(
@@ -255,8 +264,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ),
                     ),
                   ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _onChatbootPressed,
+                      child: Container(
+                        height: 92,
+                        padding: const EdgeInsets.only(top: 16, bottom: 16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFD9D9D9),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.chat_bubble_outline, color: Colors.black87, size: 30),
+                            const SizedBox(height: 4),
+                            const Text('Chatbot', style: TextStyle(fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
+
               const SizedBox(height: 80),
             ],
           ),
