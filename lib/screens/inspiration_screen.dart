@@ -64,7 +64,7 @@ class _InspirationScreenState extends State<InspirationScreen> with TickerProvid
           childAspectRatio: 1.2,
           children: imageNames.map((img) {
             return Container(
-              height: 80, // smaller height (approx 50%)
+              height: 80,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: const Color(0xFF7993AE).withOpacity(0.3)),
@@ -111,7 +111,6 @@ class _InspirationScreenState extends State<InspirationScreen> with TickerProvid
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Logo aligned left
               Image.asset(
                 'assets/icons/app_icon.png',
                 width: 96,
@@ -119,28 +118,31 @@ class _InspirationScreenState extends State<InspirationScreen> with TickerProvid
               ),
               const SizedBox(height: 16),
 
-              // Search bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0F0F0),
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: const Color(0xFF7993AE).withOpacity(0.3)),
                 ),
-                child: const TextField(
-                  decoration: InputDecoration(
-                    icon: Icon(Icons.search, color: Color(0xFF7993AE)),
-                    hintText: 'Search inspirations...',
-                    border: InputBorder.none,
-                  ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.search, color: Color(0xFF7993AE), size: 20),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search inspirations...',
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 24),
-
-              // Topic 1
               _buildImageGrid('Topic1', topic1Images),
-
-              // Topic 2
               _buildImageGrid('Topic2', topic2Images),
             ],
           ),
@@ -152,15 +154,7 @@ class _InspirationScreenState extends State<InspirationScreen> with TickerProvid
         backgroundColor: Colors.white,
         selectedItemColor: const Color(0xFF7993AE),
         unselectedItemColor: Colors.grey,
-        fabIcon: Container(
-          padding: const EdgeInsets.all(2),
-          child: Image.asset(
-            'assets/icons/Search.png',
-            width: 24,
-            height: 24,
-            color: Colors.white,
-          ),
-        ),
+        fabIcon: const Icon(Icons.search, color: Colors.white),
         fabBackgroundColor: const Color(0xFF7993AE),
         onFabPressed: _onFabPressed,
         items: const [

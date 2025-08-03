@@ -169,7 +169,7 @@ class _BaseNavigationWidgetState extends State<BaseNavigationWidget> {
           CurvedBottomNavigationBarItem(
               icon: Icons.favorite, label: 'Favorites'),
           CurvedBottomNavigationBarItem(icon: Icons.store, label: 'Store'),
-          CurvedBottomNavigationBarItem(icon: Icons.person, label: 'Details'),
+          CurvedBottomNavigationBarItem(icon: Icons.info_outline, label: 'Details'),
         ],
       ),
     );

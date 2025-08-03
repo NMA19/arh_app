@@ -10,6 +10,7 @@ import 'ai_scanner_screen.dart';
 import 'discober_screen.dart';
 import 'sos_screen.dart';
 import 'magicPlan_screen.dart';
+import 'LoadEas_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -215,7 +216,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      onTap: () => print('LoadEas pressed'),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const LoadEaseScreen()),
+                        );
+                      },
                       child: Container(
                         height: 92,
                         padding: const EdgeInsets.only(top: 36, bottom: 16),
