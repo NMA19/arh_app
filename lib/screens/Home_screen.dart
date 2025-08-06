@@ -12,6 +12,8 @@ import 'sos_screen.dart';
 import 'magicPlan_screen.dart';
 import 'LoadEas_screen.dart';
 import 'chatboot_screen.dart';
+import 'startmodeling_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -121,6 +123,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       MaterialPageRoute(builder: (context) => const MagicPlanScreen()),
     );
   }
+  void _onStartmodeling() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const StartModelingScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               style: TextStyle(color: Colors.black54, fontSize: 13)),
                           const SizedBox(height: 12),
                           ElevatedButton(
-                            onPressed: _onMagicPlanPressed,
+                            onPressed: _onStartmodeling,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF586C7C),
                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
