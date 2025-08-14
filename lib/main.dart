@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/welcome_screen.dart';
+import 'widgets/auth_wrapper.dart';
 //import 'screens/Home_screen.dart';
 //import 'screens/addProd_screen.dart';
 //import 'screens/chat_screen.dart';
@@ -20,6 +21,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const WelcomeScreen(),
+      routes: {
+        '/auth': (context) => const AuthWrapper(),
+      },
     );
   }
 }

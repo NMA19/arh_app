@@ -1,20 +1,67 @@
 import 'package:flutter/material.dart';
 import 'BaseNavigationWidget.dart';
+import '../services/favorites_service.dart';
 
-class FavoritesScreen extends StatelessWidget {
+class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final favoriteImages = [
-      'Frame (1).png',
-      'Frame (2).png',
-      'Frame (3).png',
-      'Frame (4).png',
-      'Frame (5).png',
-      'Frame.png',
-    ];
+  State<FavoritesScreen> createState() => _FavoritesScreenState();
+}
 
+class _FavoritesScreenState extends State<FavoritesScreen> {
+  List<dynamic> favorites = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    try {
+      final favoritesList = await FavoritesService.getFavorites();
+      setState(() {
+        favorites = favoritesList;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      // Fallback to static images if API fails
+      favorites = [
+        {'product': {'name': 'Sample 1', 'imageUrl': 'assets/images/Favorite/Frame (1).png'}},
+        {'product': {'name': 'Sample 2', 'imageUrl': 'assets/images/Favorite/Frame (2).png'}},
+        {'product': {'name': 'Sample 3', 'imageUrl': 'assets/images/Favorite/Frame (3).png'}},
+        {'product': {'name': 'Sample 4', 'imageUrl': 'assets/images/Favorite/Frame (4).png'}},
+        {'product': {'name': 'Sample 5', 'imageUrl': 'assets/images/Favorite/Frame (5).png'}},
+        {'product': {'name': 'Sample 6', 'imageUrl': 'assets/images/Favorite/Frame.png'}},
+      ];
+    }
+  }
+
+  Future<void> _removeFromFavorites(String productId) async {
+    try {
+      await FavoritesService.removeFromFavorites(productId);
+      _loadFavorites(); // Refresh the list
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Removed from favorites')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to remove: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BaseNavigationWidget(
       title: '', // Empty title (no AppBar will be shown)
       selectedIndex: 1, // Index for Favorites tab
@@ -36,8 +83,27 @@ class FavoritesScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
-              // Custom staggered grid layout
-              _buildStaggeredGrid(favoriteImages),
+              // Loading or content
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : favorites.isEmpty
+                      ? const Center(
+                          child: Column(
+                            children: [
+                              Icon(Icons.favorite_border, size: 64, color: Colors.grey),
+                              SizedBox(height: 16),
+                              Text(
+                                'No favorites yet',
+                                style: TextStyle(fontSize: 18, color: Colors.grey),
+                              ),
+                              Text(
+                                'Add some products to your favorites!',
+                                style: TextStyle(fontSize: 14, color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        )
+                      : _buildStaggeredGrid(),
               const SizedBox(height: 20), // Extra space at bottom
             ],
           ),
@@ -46,7 +112,19 @@ class FavoritesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStaggeredGrid(List<String> favoriteImages) {
+  Widget _buildStaggeredGrid() {
+    // Create two lists for left and right columns
+    List<dynamic> leftColumn = [];
+    List<dynamic> rightColumn = [];
+    
+    for (int i = 0; i < favorites.length; i++) {
+      if (i % 2 == 0) {
+        leftColumn.add(favorites[i]);
+      } else {
+        rightColumn.add(favorites[i]);
+      }
+    }
+
     return Column(
       children: [
         Row(
@@ -55,27 +133,20 @@ class FavoritesScreen extends StatelessWidget {
             // Left column
             Expanded(
               child: Column(
-                children: [
-                  _buildImageCard(favoriteImages[0], 200), // Tall
-                  const SizedBox(height: 16),
-                  _buildImageCard(favoriteImages[2], 150), // Short
-                  const SizedBox(height: 16),
-                  _buildImageCard(favoriteImages[4], 180), // Medium
-                ],
+                children: leftColumn.map((favorite) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildImageCard(favorite),
+                )).toList(),
               ),
             ),
             const SizedBox(width: 16),
             // Right column
             Expanded(
               child: Column(
-                children: [
-                  _buildImageCard(favoriteImages[1], 150), // Short
-                  const SizedBox(height: 16),
-                  _buildImageCard(favoriteImages[3], 220), // Tall
-                  const SizedBox(height: 16),
-                  if (favoriteImages.length > 5)
-                    _buildImageCard(favoriteImages[5], 160), // Medium
-                ],
+                children: rightColumn.map((favorite) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildImageCard(favorite),
+                )).toList(),
               ),
             ),
           ],
@@ -84,7 +155,11 @@ class FavoritesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildImageCard(String imagePath, double height) {
+  Widget _buildImageCard(Map<String, dynamic> favorite) {
+    final product = favorite['product'];
+    final heights = [150.0, 180.0, 200.0, 220.0];
+    final height = heights[favorites.indexOf(favorite) % heights.length];
+    
     return Container(
       height: height,
       decoration: BoxDecoration(
@@ -99,72 +174,85 @@ class FavoritesScreen extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Stack(
         children: [
-          // Image section
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFF8F9FA),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: product['imageUrl'] != null
+                ? Image.asset(
+                    product['imageUrl'],
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Colors.grey[200],
+                        child: const Icon(Icons.favorite, size: 50, color: Colors.grey),
+                      );
+                    },
+                  )
+                : Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.favorite, size: 50, color: Colors.grey),
+                  ),
+          ),
+          // Product name overlay
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
                 ),
-                child: Image.asset(
-                  'assets/images/Favorite/$imagePath',
-                  fit: BoxFit.cover,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.7),
+                  ],
                 ),
               ),
-            ),
-          ),
-          // Action buttons section
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      product['name'] ?? 'Unknown Product',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _removeFromFavorites(product['id']),
+                    child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.favorite,
                         color: Colors.red,
-                        size: 18,
+                        size: 20,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF7993AE).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(
-                        Icons.chat_bubble_outline,
-                        color: Color(0xFF7993AE),
-                        size: 18,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
-                    Icons.more_vert,
-                    color: Colors.grey,
-                    size: 18,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],

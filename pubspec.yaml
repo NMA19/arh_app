@@ -19,6 +19,9 @@ dependencies:
   geolocator: ^10.1.0
   permission_handler: ^11.3.0
   flutter_cube: ^0.1.1
+  http: ^1.1.0
+  shared_preferences: ^2.2.2
+  socket_io_client: ^2.0.3+1
 
 dev_dependencies:
   flutter_test:
@@ -54,4 +57,4 @@ flutter:
     - assets/images/aipic/
     - assets/icons/scan.png
     - assets/images/disc/
-    -  assets/3d/
+    - assets/3d/

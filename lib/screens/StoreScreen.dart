@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'BaseNavigationWidget.dart';
+import '../services/product_service.dart';
+import '../services/metadata_service.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -11,39 +13,103 @@ class StoreScreen extends StatefulWidget {
 class _StoreScreenState extends State<StoreScreen> {
   final TextEditingController _searchController = TextEditingController();
   final PageController _productPageController = PageController();
-  final PageController _servicesPageController = PageController();
 
-  final List<CategoryItem> categories = [
-    CategoryItem(name: 'Chairs', imagePath: 'assets/images/Store/Categories/Black.png'),
-    CategoryItem(name: 'Tables', imagePath: 'assets/images/Store/Categories/Black (1).png'),
-    CategoryItem(name: 'Sofas', imagePath: 'assets/images/Store/Categories/Black (2).png'),
-    CategoryItem(name: 'Decor', imagePath: 'assets/images/Store/Categories/Black (3).png'),
-    CategoryItem(name: 'Lighting', imagePath: 'assets/images/Store/Categories/Black (4).png'),
-  ];
+  List<dynamic> categories = [];
+  List<dynamic> products = [];
+  bool _isLoadingCategories = true;
+  bool _isLoadingProducts = true;
+  String? _selectedCategory;
 
-  final List<ProductItem> products = [
-    ProductItem(
-      name: 'Serene Interior Decor',
-      type: 'Armchair',
-      price: 899.99,
-      rating: 4.5,
-      imagePath: 'assets/images/Store/Serene Interior Decor.png',
-    ),
-    ProductItem(
-      name: 'Orange Pillow Set',
-      type: 'Home Decor',
-      price: 149.99,
-      rating: 4.8,
-      imagePath: 'assets/images/Store/Serene Interior with Orange Pillow.png',
-    ),
-    ProductItem(
-      name: 'Warm Toned Elegance',
-      type: 'Office Furniture',
-      price: 1299.99,
-      rating: 4.7,
-      imagePath: 'assets/images/Store/Warm Toned Elegance_ Sophisticated Home Office.png',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    await _loadCategories();
+    await _loadProducts();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final categoryList = await MetadataService.getCategories();
+      setState(() {
+        categories = categoryList;
+        _isLoadingCategories = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingCategories = false;
+      });
+      // Fallback to static categories if API fails
+      categories = [
+        {'name': 'Chairs', 'imageUrl': 'assets/images/Store/Categories/Black.png'},
+        {'name': 'Tables', 'imageUrl': 'assets/images/Store/Categories/Black (1).png'},
+        {'name': 'Sofas', 'imageUrl': 'assets/images/Store/Categories/Black (2).png'},
+        {'name': 'Decor', 'imageUrl': 'assets/images/Store/Categories/Black (3).png'},
+        {'name': 'Lighting', 'imageUrl': 'assets/images/Store/Categories/Black (4).png'},
+      ];
+    }
+  }
+
+  Future<void> _loadProducts({String? search, String? category}) async {
+    try {
+      setState(() {
+        _isLoadingProducts = true;
+      });
+      
+      final response = await ProductService.getProducts(
+        search: search,
+        category: category,
+        limit: 10,
+      );
+      
+      setState(() {
+        products = response['products'] ?? [];
+        _isLoadingProducts = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingProducts = false;
+      });
+      // Fallback to static products if API fails
+      products = [
+        {
+          'name': 'Serene Interior Decor',
+          'description': 'Comfortable armchair',
+          'price': 899.99,
+          'imageUrl': 'assets/images/Store/Serene Interior Decor.png',
+          'category': {'name': 'Chairs'},
+        },
+        {
+          'name': 'Orange Pillow Set',
+          'description': 'Home decor pillows',
+          'price': 149.99,
+          'imageUrl': 'assets/images/Store/Serene Interior with Orange Pillow.png',
+          'category': {'name': 'Decor'},
+        },
+        {
+          'name': 'Warm Toned Elegance',
+          'description': 'Office furniture set',
+          'price': 1299.99,
+          'imageUrl': 'assets/images/Store/Warm Toned Elegance_ Sophisticated Home Office.png',
+          'category': {'name': 'Tables'},
+        },
+      ];
+    }
+  }
+
+  void _onSearchChanged() {
+    _loadProducts(search: _searchController.text);
+  }
+
+  void _onCategorySelected(String categoryName) {
+    setState(() {
+      _selectedCategory = categoryName;
+    });
+    _loadProducts(category: categoryName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +156,12 @@ class _StoreScreenState extends State<StoreScreen> {
                       padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Icon(Icons.search, color: Colors.grey, size: 20),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Search for ',
+                        controller: _searchController,
+                        onChanged: (value) => _onSearchChanged(),
+                        decoration: const InputDecoration(
+                          hintText: 'Search for products...',
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(vertical: 12),
                         ),
@@ -127,37 +195,50 @@ class _StoreScreenState extends State<StoreScreen> {
                   const SizedBox(height: 16),
                   SizedBox(
                     height: 100,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: categories.length,
-                      itemBuilder: (context, index) {
-                        final category = categories[index];
-                        final backgroundColor = index == 1
-                            ? const Color(0xFFFFA167).withOpacity(0.53)
-                            : const Color(0xFFCDAF33).withOpacity(0.2);
-                        return Container(
-                          margin: const EdgeInsets.only(right: 16),
-                          child: Column(
-                            children: [
-                              Container(
-                                width: 70,
-                                height: 70,
-                                decoration: BoxDecoration(
-                                  color: backgroundColor,
-                                  borderRadius: BorderRadius.circular(12),
+                    child: _isLoadingCategories
+                        ? const Center(child: CircularProgressIndicator())
+                        : ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              final category = categories[index];
+                              final backgroundColor = index == 1
+                                  ? const Color(0xFFFFA167).withOpacity(0.53)
+                                  : const Color(0xFFCDAF33).withOpacity(0.2);
+                              return GestureDetector(
+                                onTap: () => _onCategorySelected(category['name']),
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 16),
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 70,
+                                        height: 70,
+                                        decoration: BoxDecoration(
+                                          color: backgroundColor,
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: category['imageUrl'] != null
+                                            ? Image.asset(
+                                                category['imageUrl'],
+                                                fit: BoxFit.contain,
+                                                errorBuilder: (context, error, stackTrace) {
+                                                  return const Icon(Icons.category, size: 30);
+                                                },
+                                              )
+                                            : const Icon(Icons.category, size: 30),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        category['name'],
+                                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                child: Image.asset(
-                                  category.imagePath,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(category.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-                            ],
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -172,14 +253,16 @@ class _StoreScreenState extends State<StoreScreen> {
                   const SizedBox(height: 16),
                   SizedBox(
                     height: 380,
-                    child: PageView.builder(
-                      controller: _productPageController,
-                      itemCount: products.length,
-                      itemBuilder: (context, index) => Container(
-                        margin: const EdgeInsets.only(right: 16),
-                        child: _buildProductCard(products[index]),
-                      ),
-                    ),
+                    child: _isLoadingProducts
+                        ? const Center(child: CircularProgressIndicator())
+                        : PageView.builder(
+                            controller: _productPageController,
+                            itemCount: products.length,
+                            itemBuilder: (context, index) => Container(
+                              margin: const EdgeInsets.only(right: 16),
+                              child: _buildProductCard(products[index]),
+                            ),
+                          ),
                   ),
                 ],
               ),
@@ -191,7 +274,7 @@ class _StoreScreenState extends State<StoreScreen> {
     );
   }
 
-  Widget _buildProductCard(ProductItem product) {
+  Widget _buildProductCard(Map<String, dynamic> product) {
     return Container(
       width: 240,
       decoration: BoxDecoration(
@@ -215,35 +298,39 @@ class _StoreScreenState extends State<StoreScreen> {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Image.asset(
-                      product.imagePath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
+                  child: product['imageUrl'] != null
+                      ? Image.asset(
+                          product['imageUrl'],
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: double.infinity,
+                              height: 200,
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.chair, size: 50, color: Colors.grey),
+                            );
+                          },
+                        )
+                      : Container(
+                          width: double.infinity,
+                          height: 200,
                           color: Colors.grey[200],
-                          child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 50),
-                        );
-                      },
-                    ),
-                  ),
+                          child: const Icon(Icons.chair, size: 50, color: Colors.grey),
+                        ),
                 ),
                 Positioned(
-                  bottom: 12,
+                  top: 12,
                   right: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: const Color(0xFFFFF0BA), borderRadius: BorderRadius.circular(12)),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.star, color: Color(0xFFFFC601), size: 14),
-                        const SizedBox(width: 2),
-                        Text(product.rating.toString(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFFFFC601))),
-                      ],
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(18),
                     ),
+                    child: const Icon(Icons.favorite_border, color: Colors.grey, size: 20),
                   ),
                 ),
               ],
@@ -256,30 +343,35 @@ class _StoreScreenState extends State<StoreScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      product.name,
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50)),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis
+                    product['name'] ?? 'Unknown Product',
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF2C3E50)),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(product.type, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                  const SizedBox(height: 8),
                   Text(
-                      '\$${product.price.toStringAsFixed(2)}',
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFA75726))
+                    product['category']?['name'] ?? product['description'] ?? '',
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const Spacer(),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(color: const Color(0xFF7993AE), borderRadius: BorderRadius.circular(20)),
-                      child: IconButton(
-                        icon: const Icon(Icons.add, color: Colors.white, size: 20),
-                        onPressed: () => _showProductDetails(product),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        '\$${(product['price'] ?? 0).toStringAsFixed(2)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFFA75726)),
                       ),
-                    ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFA75726),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.add, color: Colors.white, size: 16),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -295,158 +387,32 @@ class _StoreScreenState extends State<StoreScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Filter Products'),
-        content: const Text('Filter options will be implemented here'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Filter by category:'),
+            DropdownButton<String>(
+              value: _selectedCategory,
+              hint: const Text('Select Category'),
+              items: categories.map((category) {
+                return DropdownMenuItem<String>(
+                  value: category['name'],
+                  child: Text(category['name']),
+                );
+              }).toList(),
+              onChanged: (value) {
+                Navigator.pop(context);
+                if (value != null) {
+                  _onCategorySelected(value);
+                }
+              },
+            ),
+          ],
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
         ],
       ),
     );
   }
-
-  void _showProductDetails(ProductItem product) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.9,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Center(
-                    child: Container(
-                        width: 40,
-                        height: 4,
-                        decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(2)
-                        )
-                    )
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  height: 240,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      color: Colors.grey[100]
-                  ),
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        product.imagePath,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 80),
-                          );
-                        },
-                      )
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    const Icon(Icons.star, color: Color(0xFFFFC601), size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                        product.rating.toString(),
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFFFFC601))
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                        '(${(product.rating * 234).toInt()} reviews)',
-                        style: const TextStyle(fontSize: 12, color: Colors.grey)
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text(product.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50))),
-                const SizedBox(height: 6),
-                Text(product.type, style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                const SizedBox(height: 12),
-                const Text('Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF2C3E50))),
-                const SizedBox(height: 6),
-                const Text('This is a premium quality product crafted with attention to detail and designed to enhance your living space with style and comfort.', style: TextStyle(fontSize: 13, color: Colors.grey, height: 1.4)),
-                const SizedBox(height: 16),
-                const Text('You may also like', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF2C3E50))),
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: products.length,
-                    itemBuilder: (context, index) => Container(
-                      margin: const EdgeInsets.only(right: 8),
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        color: Colors.grey[200],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(
-                          products[index].imagePath,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(Icons.image_not_supported, color: Colors.grey, size: 25);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text('Color: Soft Beige', style: TextStyle(fontSize: 13, color: Color(0xFF7993AE))),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFA75726),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    child: Text(
-                        'Buy Our Services 899.99 ',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CategoryItem {
-  final String name;
-  final String imagePath;
-  CategoryItem({required this.name, required this.imagePath});
-}
-
-class ProductItem {
-  final String name;
-  final String type;
-  final double price;
-  final double rating;
-  final String imagePath;
-  ProductItem({required this.name, required this.type, required this.price, required this.rating, required this.imagePath});
 }

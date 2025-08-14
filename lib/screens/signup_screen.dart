@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_screen.dart'; // ✅ Correct import for the login page
+import '../services/auth_service.dart';
+import 'Home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -13,6 +15,64 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _acceptTerms = false;
+  bool _isLoading = false;
+  
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  Future<void> _handleSignUp() async {
+    if (!_formKey.currentState!.validate()) return;
+    if (!_acceptTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please accept the terms to continue.")),
+      );
+      return;
+    }
+    
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await AuthService.register(
+        email: _emailController.text,
+        password: _passwordController.text,
+        firstName: _usernameController.text.split(' ').first,
+        lastName: _usernameController.text.split(' ').length > 1 
+            ? _usernameController.text.split(' ').last 
+            : '',
+        username: _usernameController.text,
+      );
+      
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,19 +118,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 42),
 
                 // Username
-                _buildInput("Username"),
+                _buildInput("Username", _usernameController),
                 const SizedBox(height: 16),
 
                 // Email
-                _buildInput("Email", keyboardType: TextInputType.emailAddress),
+                _buildInput("Email", _emailController, keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 16),
 
                 // Password
-                _buildPasswordField("Password", true),
+                _buildPasswordField("Password", _passwordController, true),
                 const SizedBox(height: 16),
 
                 // Confirm Password
-                _buildPasswordField("Confirm Password", false),
+                _buildPasswordField("Confirm Password", _confirmPasswordController, false),
                 const SizedBox(height: 16),
 
                 // Terms Checkbox
@@ -101,26 +161,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate() && _acceptTerms) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Signing up...")),
-                      );
-                      // You can also navigate after success:
-                      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
-                    } else if (!_acceptTerms) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please accept the terms to continue.")),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
+                  onPressed: _isLoading ? null : _handleSignUp,
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.black)
+                      : const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
                 ),
 
                 const SizedBox(height: 16),
@@ -161,9 +211,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildInput(String label,
+  Widget _buildInput(String label, TextEditingController controller,
       {TextInputType keyboardType = TextInputType.text}) {
     return TextFormField(
+      controller: controller,
       keyboardType: keyboardType,
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
@@ -180,8 +231,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildPasswordField(String label, bool isPassword) {
+  Widget _buildPasswordField(String label, TextEditingController controller, bool isPassword) {
     return TextFormField(
+      controller: controller,
       obscureText: isPassword ? _obscurePassword : _obscureConfirm,
       style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
