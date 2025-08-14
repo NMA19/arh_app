@@ -1,9 +1,106 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'login_screen.dart';
+import '../services/auth_service.dart';
 
-class ResetPasswordScreen extends StatelessWidget {
+class ResetPasswordScreen extends StatefulWidget {
   const ResetPasswordScreen({super.key});
+
+  @override
+  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+}
+
+class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _newPasswordController = TextEditingController();
+  
+  bool _isLoading = false;
+  bool _codeSent = false;
+  bool _obscurePassword = true;
+
+  Future<void> _sendResetCode() async {
+    if (_emailController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter your email')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await AuthService.resetPassword(_emailController.text);
+      
+      if (mounted) {
+        setState(() {
+          _codeSent = true;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Reset code sent!')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _resetPassword() async {
+    if (_codeController.text.isEmpty || _newPasswordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all fields')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await AuthService.confirmPasswordReset(
+        _emailController.text,
+        _codeController.text,
+        _newPasswordController.text,
+      );
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset successful!')),
+        );
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +134,10 @@ class ResetPasswordScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            const TextField(
-              decoration: InputDecoration(
+            TextField(
+              controller: _emailController,
+              enabled: !_codeSent,
+              decoration: const InputDecoration(
                 filled: true,
                 fillColor: Colors.white,
                 labelText: 'Enter your email',
@@ -48,17 +147,51 @@ class ResetPasswordScreen extends StatelessWidget {
                 ),
               ),
             ),
+            
+            if (_codeSent) ...[
+              const SizedBox(height: 20),
+              TextField(
+                controller: _codeController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Enter verification code',
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _newPasswordController,
+                obscureText: _obscurePassword,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  labelText: 'Enter new password',
+                  labelStyle: const TextStyle(color: Colors.black),
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey[700],
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
 
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const CodeVerificationScreen(),
-                  ),
-                );
-              },
+              onPressed: _isLoading ? null : (_codeSent ? _resetPassword : _sendResetCode),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDED2C8),
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -66,14 +199,16 @@ class ResetPasswordScreen extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                 ),
               ),
-              child: const Center(
-                child: Text(
-                  "Send code",
-                  style: TextStyle(
-                    color: Color(0xFF586C7C),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+              child: Center(
+                child: _isLoading 
+                  ? const CircularProgressIndicator(color: Color(0xFF586C7C))
+                  : Text(
+                      _codeSent ? "Reset Password" : "Send Code",
+                      style: const TextStyle(
+                        color: Color(0xFF586C7C),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
               ),
             ),
 

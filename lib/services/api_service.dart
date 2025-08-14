@@ -64,10 +64,19 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return json.decode(response.body);
       } else {
-        final error = json.decode(response.body);
-        throw Exception(error['error'] ?? 'Unknown error');
+        final errorBody = response.body;
+        Map<String, dynamic> error;
+        try {
+          error = json.decode(errorBody);
+        } catch (e) {
+          error = {'error': 'Unknown error occurred'};
+        }
+        throw Exception(error['error'] ?? error['message'] ?? 'Request failed with status ${response.statusCode}');
       }
     } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
       throw Exception('Network error: $e');
     }
   }

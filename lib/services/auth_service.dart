@@ -51,10 +51,9 @@ class AuthService {
       final response = await ApiService.post('/auth/register', {
         'email': email,
         'password': password,
-        'firstName': firstName,
-        'lastName': lastName,
+        'name': '$firstName ${lastName.isNotEmpty ? lastName : ''}'.trim(),
+        'username': username ?? email.split('@').first,
         if (phone != null) 'phone': phone,
-        if (username != null) 'username': username,
       });
       
       if (response['token'] != null) {
@@ -93,7 +92,7 @@ class AuthService {
   // Reset password
   static Future<Map<String, dynamic>> resetPassword(String email) async {
     try {
-      return await ApiService.post('/auth/reset-password', {
+      return await ApiService.post('/auth/forgot-password-email', {
         'email': email,
       });
     } catch (e) {
@@ -101,14 +100,53 @@ class AuthService {
     }
   }
   
+  // Confirm password reset with code
+  static Future<Map<String, dynamic>> confirmPasswordReset(
+    String email, 
+    String code, 
+    String newPassword
+  ) async {
+    try {
+      return await ApiService.post('/auth/reset-password', {
+        'email': email,
+        'code': code,
+        'newPassword': newPassword,
+      });
+    } catch (e) {
+      throw Exception('Password reset confirmation failed: $e');
+    }
+  }
+  
+  // Social login - Google
+  static Future<Map<String, dynamic>> loginWithGoogle() async {
+    try {
+      // This would typically use Google Sign-In plugin
+      // For now, redirect to web OAuth
+      throw Exception('Google login not yet implemented in Flutter app');
+    } catch (e) {
+      throw Exception('Google login failed: $e');
+    }
+  }
+  
+  // Social login - Facebook
+  static Future<Map<String, dynamic>> loginWithFacebook() async {
+    try {
+      // This would typically use Facebook Login plugin
+      // For now, redirect to web OAuth
+      throw Exception('Facebook login not yet implemented in Flutter app');
+    } catch (e) {
+      throw Exception('Facebook login failed: $e');
+    }
+  }
+  
   // Logout
   static Future<void> logout() async {
-    await ApiService.removeToken();
+    await ApiService.setToken('');
   }
   
   // Check if user is logged in
   static Future<bool> isLoggedIn() async {
     final token = await ApiService.getToken();
-    return token != null;
+    return token != null && token.isNotEmpty;
   }
 }

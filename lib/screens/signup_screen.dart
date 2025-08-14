@@ -44,16 +44,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       await AuthService.register(
-        email: _emailController.text,
+        email: _emailController.text.trim(),
         password: _passwordController.text,
-        firstName: _usernameController.text.split(' ').first,
-        lastName: _usernameController.text.split(' ').length > 1 
-            ? _usernameController.text.split(' ').last 
+        firstName: _usernameController.text.trim().split(' ').first,
+        lastName: _usernameController.text.trim().split(' ').length > 1 
+            ? _usernameController.text.trim().split(' ').sublist(1).join(' ')
             : '',
-        username: _usernameController.text,
+        username: _usernameController.text.trim().toLowerCase().replaceAll(' ', ''),
       );
       
       if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful!')),
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -61,8 +64,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
     } catch (e) {
       if (mounted) {
+        String errorMessage = e.toString().replaceFirst('Exception: ', '');
+        if (errorMessage.contains('Registration failed:')) {
+          errorMessage = errorMessage.replaceFirst('Registration failed: ', '');
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration failed: ${e.toString()}')),
+          SnackBar(
+            content: Text('Registration failed: $errorMessage'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
         );
       }
     } finally {
@@ -226,8 +237,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      validator: (value) =>
-      value == null || value.isEmpty ? "Please enter $label" : null,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Please enter $label";
+        }
+        if (label == "Email" && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+          return "Please enter a valid email address";
+        }
+        if (label == "Username" && value.length < 3) {
+          return "Username must be at least 3 characters";
+        }
+        return null;
+      },
     );
   }
 
@@ -262,8 +283,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           },
         ),
       ),
-      validator: (value) => value == null || value.length < 8
-          ? "Password must be at least 8 characters"
+      validator: (value) => value == null || value.length < 6
+          ? "Password must be at least 6 characters"
           : null,
     );
   }

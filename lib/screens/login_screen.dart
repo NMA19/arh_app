@@ -255,8 +255,27 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         elevation: 3,
       ),
-      onPressed: () {
-        // TODO: Handle social login
+      onPressed: () async {
+        try {
+          if (label == "Google") {
+            await AuthService.loginWithGoogle();
+          } else if (label == "Facebook") {
+            await AuthService.loginWithFacebook();
+          }
+          
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            );
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('$label login: ${e.toString()}')),
+            );
+          }
+        }
       },
       child: Row(
         children: [
