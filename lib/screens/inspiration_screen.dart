@@ -13,7 +13,7 @@ class InspirationScreen extends StatefulWidget {
 }
 
 class _InspirationScreenState extends State<InspirationScreen> with TickerProviderStateMixin {
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
 
   void _onNavItemTapped(int index) {
     switch (index) {

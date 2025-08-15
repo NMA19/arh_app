@@ -97,7 +97,7 @@ class FavoritesScreen extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               // Custom staggered grid layout
-              _buildStaggeredGrid(favoriteImages),
+              buildStaggeredGrid(favoriteImages),
               const SizedBox(height: 20), // Extra space at bottom
             ],
           ),
@@ -106,7 +106,7 @@ class FavoritesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStaggeredGrid(List<String> favoriteImages) {
+  Widget buildStaggeredGrid(List<String> favoriteImages) {
     return Column(
       children: [
         Row(
@@ -116,11 +116,11 @@ class FavoritesScreen extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  _buildImageCard(favoriteImages[0], 200), // Tall
+                  buildImageCard(favoriteImages[0], 200), // Tall
                   const SizedBox(height: 16),
-                  _buildImageCard(favoriteImages[2], 150), // Short
+                  buildImageCard(favoriteImages[2], 150), // Short
                   const SizedBox(height: 16),
-                  _buildImageCard(favoriteImages[4], 180), // Medium
+                  buildImageCard(favoriteImages[4], 180), // Medium
                 ],
               ),
             ),
@@ -129,12 +129,12 @@ class FavoritesScreen extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  _buildImageCard(favoriteImages[1], 150), // Short
+                  buildImageCard(favoriteImages[1], 150), // Short
                   const SizedBox(height: 16),
-                  _buildImageCard(favoriteImages[3], 220), // Tall
+                  buildImageCard(favoriteImages[3], 220), // Tall
                   const SizedBox(height: 16),
                   if (favoriteImages.length > 5)
-                    _buildImageCard(favoriteImages[5], 160), // Medium
+                    buildImageCard(favoriteImages[5], 160), // Medium
                 ],
               ),
             ),
@@ -144,7 +144,7 @@ class FavoritesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildImageCard(String imagePath, double height) {
+  Widget buildImageCard(String imagePath, double height) {
     return Container(
       height: height,
       decoration: BoxDecoration(

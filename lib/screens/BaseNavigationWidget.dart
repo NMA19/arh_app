@@ -4,7 +4,6 @@ import 'Home_screen.dart';
 import 'FavoritesScreen.dart';
 import 'StoreScreen.dart';
 import 'details_screen.dart';
-import '';
 
 class BaseNavigationWidget extends StatefulWidget {
   final Widget child;
