@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'BaseNavigationWidget.dart';
-import '../services/product_service.dart';
-import '../services/metadata_service.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -33,7 +31,16 @@ class _StoreScreenState extends State<StoreScreen> {
 
   Future<void> _loadCategories() async {
     try {
-      final categoryList = await MetadataService.getCategories();
+      // Mock categories data
+      final categoryList = [
+        {'name': 'Chairs', 'imageUrl': 'assets/images/Store/Categories/Black.png'},
+        {'name': 'Sofas', 'imageUrl': 'assets/images/Store/Categories/Brown.png'},
+        {'name': 'Tables', 'imageUrl': 'assets/images/Store/Categories/Chair.png'},
+        {'name': 'Lighting', 'imageUrl': 'assets/images/Store/Categories/Gray.png'},
+        {'name': 'Decor', 'imageUrl': 'assets/images/Store/Categories/Brown.png'},
+        {'name': 'Storage', 'imageUrl': 'assets/images/Store/Categories/Black.png'},
+      ];
+      
       setState(() {
         categories = categoryList;
         _isLoadingCategories = false;
@@ -59,14 +66,44 @@ class _StoreScreenState extends State<StoreScreen> {
         _isLoadingProducts = true;
       });
       
-      final response = await ProductService.getProducts(
-        search: search,
-        category: category,
-        limit: 10,
-      );
+      // Mock products data
+      final mockProducts = [
+        {
+          'id': '1',
+          'name': 'Modern Armchair',
+          'price': 299.99,
+          'image': 'assets/images/Store/chairs/1.png',
+          'rating': 4.5,
+          'category': 'Chairs'
+        },
+        {
+          'id': '2',
+          'name': 'Dining Table',
+          'price': 599.99,
+          'image': 'assets/images/Store/tables/1.png',
+          'rating': 4.8,
+          'category': 'Tables'
+        },
+        {
+          'id': '3',
+          'name': 'Floor Lamp',
+          'price': 129.99,
+          'image': 'assets/images/Store/lighting/1.png',
+          'rating': 4.2,
+          'category': 'Lighting'
+        },
+        {
+          'id': '4',
+          'name': 'Velvet Sofa',
+          'price': 899.99,
+          'image': 'assets/images/Store/sofas/1.png',
+          'rating': 4.7,
+          'category': 'Sofas'
+        }
+      ];
       
       setState(() {
-        products = response['products'] ?? [];
+        products = mockProducts;
         _isLoadingProducts = false;
       });
     } catch (e) {

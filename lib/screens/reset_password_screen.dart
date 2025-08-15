@@ -72,7 +72,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     try {
       await AuthService.confirmPasswordReset(
-        _emailController.text,
         _codeController.text,
         _newPasswordController.text,
       );

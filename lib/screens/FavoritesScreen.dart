@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'BaseNavigationWidget.dart';
-import '../services/favorites_service.dart';
 
 class FavoritesScreen extends StatefulWidget {
   const FavoritesScreen({super.key});
@@ -21,7 +20,31 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Future<void> _loadFavorites() async {
     try {
-      final favoritesList = await FavoritesService.getFavorites();
+      // Mock data for favorites
+      final favoritesList = [
+        {
+          'id': '1',
+          'name': 'Modern Chair',
+          'price': 299.99,
+          'image': 'assets/images/Topic1/furniture1.jpg',
+          'category': 'Furniture'
+        },
+        {
+          'id': '2', 
+          'name': 'Table Lamp',
+          'price': 89.99,
+          'image': 'assets/images/Topic1/lamp1.jpg',
+          'category': 'Lighting'
+        },
+        {
+          'id': '3',
+          'name': 'Decorative Vase',
+          'price': 45.50,
+          'image': 'assets/images/Topic1/decor1.jpg',
+          'category': 'Decor'
+        }
+      ];
+      
       setState(() {
         favorites = favoritesList;
         _isLoading = false;
@@ -44,8 +67,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   Future<void> _removeFromFavorites(String productId) async {
     try {
-      await FavoritesService.removeFromFavorites(productId);
-      _loadFavorites(); // Refresh the list
+      // Mock removal - just remove from local list
+      setState(() {
+        favorites.removeWhere((item) => item['id'] == productId);
+      });
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Removed from favorites')),

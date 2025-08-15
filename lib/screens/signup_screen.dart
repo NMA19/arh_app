@@ -44,13 +44,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
     try {
       await AuthService.register(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        firstName: _usernameController.text.trim().split(' ').first,
-        lastName: _usernameController.text.trim().split(' ').length > 1 
-            ? _usernameController.text.trim().split(' ').sublist(1).join(' ')
-            : '',
-        username: _usernameController.text.trim().toLowerCase().replaceAll(' ', ''),
+        _usernameController.text.trim().toLowerCase().replaceAll(' ', ''),
+        _emailController.text.trim(),
+        _passwordController.text,
       );
       
       if (mounted) {
